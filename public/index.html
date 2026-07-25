@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>My API</title>
+  </head>
+  <body>
+    <main>
+      <h1>Welcome to the Backend API</h1>
+      <h2>🤨 You should not be here!</h2>
+
+      <p>But since you've found it, here are the endpoints:</p>
+
+      <ul>
+        <li>
+          <code>/</code>
+          <span>
+            - the default route. It serves this HTML file along with the CSS
+            &amp; JS from <code class="public-path">/public</code> - basically
+            this page!</span
+          >
+        </li>
+        <li>
+          <code>/check</code>
+          <span>
+            - a health check. Returns JSON so you can confirm the server is
+            running</span
+          >
+        </li>
+        <li>
+          <code>/api/tasks</code>
+          <span>
+            - the example CRUD resource. Copy its shape for your own
+            resources:</span
+          >
+          <ul>
+            <li><code>GET /api/tasks</code><span> - list all tasks</span></li>
+            <li><code>GET /api/tasks/:id</code><span> - get one task</span></li>
+            <li><code>POST /api/tasks</code><span> - create a task</span></li>
+            <li>
+              <code>PUT /api/tasks/:id</code
+              ><span> - replace a task (all fields)</span>
+            </li>
+            <li>
+              <code>PATCH /api/tasks/:id</code
+              ><span> - update part of a task (some fields)</span>
+            </li>
+            <li>
+              <code>DELETE /api/tasks/:id</code><span> - delete a task</span>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </main>
+
+    <footer>
+      <p>Note: this is a boiler Node.js & Express setup</p>
+      <p>please customize it to fit your specific application</p>
+    </footer>
+    <script src="./script.js"></script>
+  </body>
+</html>

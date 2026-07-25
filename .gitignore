@@ -1,0 +1,10 @@
+# Dependencies — reinstalled from package.json with `npm install`,
+# so they never belong in git.
+node_modules/
+
+# Secrets and local config — never commit these.
+.env
+
+# Logs and OS/editor noise
+*.log
+.DS_Store
