@@ -12,7 +12,8 @@ const helmet = require('helmet');
 const { rateLimit } = require('express-rate-limit');
 
 const { db } = require('./models'); // the database connection
-const { taskRouter } = require('./routes'); // the example CRUD router
+const { taskRouter, authRouter } = require('./routes'); // our routers
+const { jwtCheck } = require('./middleware/auth'); // verifies Auth0 tokens
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -50,10 +51,25 @@ app.get('/check', (req, res) => {
   res.json({ status: 200, msg: 'Health check is valid!' });
 });
 
+// ---------- protected test route ----------
+// A tiny PROTECTED endpoint used to prove auth works. jwtCheck runs first, so
+// only a request carrying a valid Auth0 token reaches the handler — otherwise
+// it gets a 401. req.auth.payload is the decoded token.
+app.get('/api/protected', jwtCheck, (req, res) => {
+  res.json({
+    message: '🔒 Your token is valid — you reached a protected route!',
+    userId: req.auth.payload.sub, // the Auth0 user id from the token
+  });
+});
+
 // ---------- API routes ----------
 // Mount each resource router under /api. Add your own the same way:
 //   app.use('/api/posts', postRouter)
 app.use('/api/tasks', taskRouter);
+
+// Auth routes sync the logged-in Auth0 user with our database.
+// This router protects itself (jwtCheck), so we just mount it here.
+app.use('/auth', authRouter);
 
 // ---------- 404 ----------
 // Nothing above matched, so the thing doesn't exist. Send a clear JSON 404.
@@ -66,7 +82,14 @@ app.use((req, res) => {
 // Every next(err) from a route ends up here, so all errors funnel to one place.
 app.use((err, req, res, next) => {
   console.error('ERROR:', err.message);
-  res.status(500).json({ error: 'Something went wrong on the server' });
+  // jwtCheck throws a 401 when a token is missing or invalid. Respect any
+  // status the error already carries; anything else is a real server error.
+  const status = err.status || err.statusCode || 500;
+  const message =
+    status === 401
+      ? 'Invalid or missing token'
+      : 'Something went wrong on the server';
+  res.status(status).json({ error: message });
 });
 
 // ---------- start the server ----------

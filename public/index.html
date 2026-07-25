@@ -52,6 +52,34 @@
             </li>
           </ul>
         </li>
+        <li>
+          <code>GET /api/protected</code>
+          <span>
+            - 🔒 a protected test route. Needs a valid Auth0 token
+            (<code>Authorization: Bearer &lt;token&gt;</code>) or it returns
+            401. Handy for confirming auth works.</span
+          >
+        </li>
+        <li>
+          <code>/auth</code>
+          <span>
+            - 🔒 syncs the logged-in Auth0 user with our database. Every route
+            here needs a valid token:</span
+          >
+          <ul>
+            <li>
+              <code>POST /auth/auth0</code
+              ><span>
+                - create the user if they don't exist yet, return their
+                row</span
+              >
+            </li>
+            <li>
+              <code>GET /auth/me</code
+              ><span> - get the logged-in user's row</span>
+            </li>
+          </ul>
+        </li>
       </ul>
     </main>
 

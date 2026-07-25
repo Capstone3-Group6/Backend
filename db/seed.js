@@ -1,7 +1,7 @@
 // db/seed.js — reset the tables and fill them with sample data.  Run: npm run seed
 // Gives you (and your teammates) the same predictable rows to build against.
 
-const { db, Task } = require('../models');
+const { db, Task, User } = require('../models');
 
 const seed = async () => {
   try {
@@ -18,6 +18,14 @@ const seed = async () => {
       { title: 'Write my first route', description: 'Add a CRUD router under /api', completed: false },
     ]);
     console.log('🌱 Sample tasks created.');
+
+    // Sample users. In real life these rows come from Auth0 logins (auth0Id is
+    // the token's "sub"). Here we fake a couple so the users table isn't empty.
+    await User.bulkCreate([
+      { auth0Id: 'auth0|seed-ada', username: 'ada', email: 'ada@example.com', name: 'Ada Lovelace' },
+      { auth0Id: 'auth0|seed-alan', username: 'alan', email: 'alan@example.com', name: 'Alan Turing' },
+    ]);
+    console.log('🌱 Sample users created.');
   } catch (err) {
     console.error('❌ Seed failed:', err.message);
   } finally {

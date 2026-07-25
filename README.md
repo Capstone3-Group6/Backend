@@ -2,16 +2,24 @@
 
 An Express + Node backend that talks to Postgres via Sequelize and exposes a
 JSON API for your React app. Ships with one example resource (`Task`) showing
-the full CRUD pattern — copy it, then delete it.
+the full CRUD pattern, plus **Auth0** login verification and a `User` table —
+copy the example, then delete it.
 
 ## Getting started
 
 ```bash
 npm install
 createdb capstone_dev     # once — must match LOCAL_DATABASE_NAME in db/index.js
-cp .env.example .env       # defaults are fine for local dev
+cp .env.example .env       # then fill in your Auth0 values (see below)
 npm run seed               # drop + recreate tables, insert sample tasks
 npm run dev                # start with auto-restart (npm start for no restart)
+```
+
+Set two Auth0 values in `.env` (from your API in the Auth0 dashboard):
+
+```
+AUTH0_DOMAIN=your-tenant.us.auth0.com
+AUTH0_AUDIENCE=http://localhost:8080   # must match the frontend's VITE_AUTH0_AUDIENCE
 ```
 
 You should see:
@@ -31,9 +39,43 @@ app.js            entry point: middleware, routes, server start
 db/index.js       Postgres connection (Sequelize)
 db/seed.js        sample data          (npm run seed)
 models/           model definitions + associations (models/index.js)
-routes/           resource routers (routes/index.js)
+middleware/auth.js  Auth0 token verification (jwtCheck)
+routes/           resource routers, incl. auth.routes.js (routes/index.js)
 public/           static info page served at /
 ```
+
+## Authentication (Auth0)
+
+The frontend logs users in with Auth0 and sends the resulting **access token**
+on each request (`Authorization: Bearer <token>`). This backend only *verifies*
+that token — it never handles passwords.
+
+- `middleware/auth.js` exports **`jwtCheck`**, which validates the token against
+  Auth0's public keys. Add it to protect a route or a whole router:
+
+  ```js
+  app.get('/api/thing', jwtCheck, handler)   // one route
+  router.use(jwtCheck)                        // every route in a router
+  ```
+
+  On success it attaches the decoded token to `req.auth.payload`
+  (`req.auth.payload.sub` is the Auth0 user id).
+
+- `models/user.model.js` — the `User` table. Keyed on **`auth0Id`** (the token's
+  `sub`), so each Auth0 login maps to exactly one row in our database.
+
+- `routes/auth.routes.js` (mounted at `/auth`, protected):
+
+  | Method | Path         | Does                                              |
+  |--------|--------------|---------------------------------------------------|
+  | POST   | `/auth/auth0`| `findOrCreate` the user — safe to call on login   |
+  | GET    | `/auth/me`   | return the logged-in user's row                   |
+
+- `GET /api/protected` is a throwaway route for confirming the token pipeline works.
+
+> `email` / `name` arrive only if you add a **Post-Login Action** in Auth0 that
+> adds them as custom claims under the namespace in `middleware/auth.js`.
+> Without it, login still works — those fields are just `null`.
 
 ## The example API — `/api/tasks`
 
