@@ -52,6 +52,57 @@
             </li>
           </ul>
         </li>
+        <li>
+          <code>GET /api/protected</code>
+          <span>
+            - 🔒 a protected test route. Needs either our login cookie or an
+            Auth0 token (<code>Authorization: Bearer &lt;token&gt;</code>) or it
+            returns 401. Handy for confirming auth works.</span
+          >
+        </li>
+        <li>
+          <code>/auth</code>
+          <span>
+            - everything about who the user is. There are two ways in: an email
+            + password account we manage ourselves, or a social login handled by
+            Auth0. Both end up as a row in the same users table.</span
+          >
+          <ul>
+            <li>
+              <code>POST /auth/signup</code
+              ><span>
+                - create an account with a username, email &amp; password. Sets
+                the login cookie, so signing up logs you in</span
+              >
+            </li>
+            <li>
+              <code>POST /auth/login</code
+              ><span>
+                - trade an email/username &amp; password for that same
+                cookie</span
+              >
+            </li>
+            <li>
+              <code>POST /auth/logout</code
+              ><span> - clear the cookie</span>
+            </li>
+            <li>
+              <code>POST /auth/auth0</code
+              ><span>
+                - 🔒 Auth0 token required. After a social login, create the user
+                if they don't exist yet and return their row</span
+              >
+            </li>
+            <li>
+              <code>GET /auth/me</code
+              ><span>
+                - 🔒 either credential. The logged-in user's row — this is how
+                the frontend answers "am I still logged in?" after a
+                refresh</span
+              >
+            </li>
+          </ul>
+        </li>
       </ul>
     </main>
 
