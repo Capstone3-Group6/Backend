@@ -14,19 +14,20 @@ const { DataTypes } = require('sequelize');
 const db = require('../db');
 
 const User = db.define('user', {
-  userId: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true,
-    allowNull: false,
-  },
+  // userId: {
+  //   // type: DataTypes.UUID,
+  //   // defaultValue: DataTypes.UUIDV4,
+  //   type: DataTypes.INTEGER,
+  //   primaryKey: true,
+  //   allowNull: false,
+  // },
   // The user's full name. Comes from Auth0 for OAuth users; optional for everyone.
   // name: {
   //   type: DataTypes.STRING,
   //   allowNull: true,
   // },
   // A display name the user picks in OUR app (sent from the frontend).
-  username: {
+  userName: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,

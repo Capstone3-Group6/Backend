@@ -1,36 +1,73 @@
-// db/seed.js — reset the tables and fill them with sample data.  Run: npm run seed
-// Gives you (and your teammates) the same predictable rows to build against.
+// db/seed.js
+// Run with: npm run seed
 
-const { db, Task, User } = require('../models');
+const { db, User, MoodPin } = require("../models");
 
 const seed = async () => {
   try {
-    // force: true DROPS every table and recreates it empty.
-    // Perfect for a seed script — never do this to real user data.
+    // Reset database
     await db.sync({ force: true });
-    console.log('🌱 Database reset.');
+    console.log("🌱 Database reset.");
 
-    // bulkCreate inserts several rows in one go.
-    await Task.bulkCreate([
-      { title: 'Set up the project', description: 'Clone the repo and run npm install', completed: true },
-      { title: 'Create the database', description: 'Run createdb capstone_dev', completed: true },
-      { title: 'Build my first model', description: 'Copy the Task model as a reference', completed: false },
-      { title: 'Write my first route', description: 'Add a CRUD router under /api', completed: false },
+    // Create sample users
+    const users = await User.bulkCreate([
+      {
+        
+        userName: "alice",
+        email: "alice@example.com",
+        passwordHash: "password123",
+      },
+      {
+        userName: "bob",
+        email: "bob@example.com",
+        passwordHash: "password123",
+      },
     ]);
-    console.log('🌱 Sample tasks created.');
 
-    // Sample users. In real life these rows come from Auth0 logins (auth0Id is
-    // the token's "sub"). Here we fake a couple so the users table isn't empty.
-    await User.bulkCreate([
-      { auth0Id: 'auth0|seed-ada', username: 'ada', email: 'ada@example.com', name: 'Ada Lovelace' },
-      { auth0Id: 'auth0|seed-alan', username: 'alan', email: 'alan@example.com', name: 'Alan Turing' },
+    console.log("🌱 Sample users created.");
+
+    // Create sample mood pins
+    await MoodPin.bulkCreate([
+      {
+        mood: "Calm",
+        description: "A quiet park with beautiful trees.",
+        latitude: 40.7829,
+        longitude: -73.9654,
+        locationName: "Central Park",
+        userId: users[0].id,
+      },
+      {
+        mood: "Creative",
+        description: "A cozy coffee shop perfect for drawing.",
+        latitude: 40.7306,
+        longitude: -73.9866,
+        locationName: "Art Cafe",
+        userId: users[0].id,
+      },
+      {
+        mood: "Focused",
+        description: "The library is silent and great for studying.",
+        latitude: 40.7532,
+        longitude: -73.9822,
+        locationName: "City Library",
+        userId: users[1].id,
+      },
+      {
+        mood: "Romantic",
+        description: "Beautiful sunset by the river.",
+        latitude: 40.7003,
+        longitude: -74.0170,
+        locationName: "Hudson River Walk",
+        userId: users[1].id,
+      },
     ]);
-    console.log('🌱 Sample users created.');
+
+    console.log("🌱 Sample mood pins created.");
   } catch (err) {
-    console.error('❌ Seed failed:', err.message);
+    console.error("❌ Seed failed:", err.message);
   } finally {
-    await db.close(); // close the connection so the script can exit
-    console.log('🌱 Done. Connection closed.');
+    await db.close();
+    console.log("🌱 Done. Connection closed.");
   }
 };
 

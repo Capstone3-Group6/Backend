@@ -2,23 +2,23 @@
 // Each field below becomes a column. Copy this shape for your own
 // models (Post, User, ...), then delete this example.
 
-const { DataTypes } = require('sequelize');
-const db = require('../db');
+const { DataTypes } = require("sequelize");
+const db = require("../db");
 
 // db.define(tableName, columns)
 // Sequelize adds id, createdAt and updatedAt columns for you automatically.
-const MoodPin = db.define('task', {
+const MoodPin = db.define("moodPin", {
   mood: {
-        type: DataTypes.ENUM(
-          "Happy",
-          "Calm",
-          "Creative",
-          "Energetic",
-          "Romantic",
-          "Focused",
-          "Inspiring"
-        ),
-        allowNull: false,
+    type: DataTypes.ENUM(
+      "Happy",
+      "Calm",
+      "Creative",
+      "Energetic",
+      "Romantic",
+      "Focused",
+      "Inspiring",
+    ),
+    allowNull: false,
   },
 
   description: {
@@ -27,20 +27,29 @@ const MoodPin = db.define('task', {
   },
 
   latitude: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-      },
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
 
-      longitude: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-      },
+  longitude: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
 
-      locationName: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
+  locationName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 
+  //  userId : {
+  //       type: DataTypes.INTEGER,
+  //       allowNull : false,
+  //       validate: { notEmpty: true },
+  //       references: {
+  //           model: "users",
+  //           key: "userId",
+  //       },
+  //   },
   // completed: {
   //   type: DataTypes.BOOLEAN,
   //   allowNull: false,
