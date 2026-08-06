@@ -4,16 +4,16 @@
 // order a request travels through the app.
 
 require('dotenv').config();
-const path = require('path');
+// const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-const helmet = require('helmet');
-const cookieParser = require('cookie-parser');
-const { rateLimit } = require('express-rate-limit');
+// const helmet = require('helmet');
+// const cookieParser = require('cookie-parser');
+// const { rateLimit } = require('express-rate-limit');
 
 const { db } = require('./models'); // the database connection
-const { taskRouter, authRouter } = require('./routes'); // our routers
+// const { taskRouter, authRouter } = require('./routes'); // our routers
 const { requireAuth } = require('./middleware/auth'); // accepts our JWT or Auth0's
 
 const app = express();
@@ -22,7 +22,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
 // Deployed apps sit behind a proxy (Render, ...). This tells Express
 // to trust it, so rate-limiting sees the real visitor IP and secure cookies work.
-app.set('trust proxy', 1);
+// app.set('trust proxy', 1);
 
 // Stop any one IP from spamming the server.
 //
@@ -30,20 +30,20 @@ app.set('trust proxy', 1);
 // effect twice, and a single page refresh already costs you /auth/me plus a
 // data fetch — so a tight limit means you hit 429 while debugging and think
 // your auth broke. Production is where this actually has a job to do.
-const isProd = process.env.NODE_ENV === 'production';
+// const isProd = process.env.NODE_ENV === 'production';
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: isProd ? 100 : 1000, // max requests per IP in that window
-  standardHeaders: 'draft-7',
-  legacyHeaders: false,
-  message: { error: '🛑 Too many requests, please try again later.' },
-});
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   limit: isProd ? 100 : 1000, // max requests per IP in that window
+//   standardHeaders: 'draft-7',
+//   legacyHeaders: false,
+//   message: { error: '🛑 Too many requests, please try again later.' },
+// });
 
 // ---------- middleware ----------
 // Middleware runs IN ORDER on every request, before it reaches your routes.
-app.use(helmet()); // sets safe HTTP headers
-app.use(cookieParser());
+// app.use(helmet()); // sets safe HTTP headers
+// app.use(cookieParser());
 app.use(
   cors({
     origin: FRONTEND_URL, // let your React app call this API
@@ -51,9 +51,9 @@ app.use(
   }),
 );
 app.use(morgan('dev')); // logs each request to the terminal (handy for debugging)
-app.use(express.json({ limit: '10kb' })); // parse JSON bodies into req.body; cap the size
-app.use(limiter);
-app.use(express.static(path.join(__dirname, 'public'))); // serve the info page in /public
+// app.use(express.json({ limit: '10kb' })); // parse JSON bodies into req.body; cap the size
+// app.use(limiter);
+// app.use(express.static(path.join(__dirname, 'public'))); // serve the info page in /public
 
 // ---------- health check ----------
 // The first thing to hit when something seems broken. If this returns JSON,

@@ -14,17 +14,17 @@ const { DataTypes } = require('sequelize');
 const db = require('../db');
 
 const User = db.define('user', {
-  id: {
+  userId: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
     allowNull: false,
   },
   // The user's full name. Comes from Auth0 for OAuth users; optional for everyone.
-  name: {
-    type: DataTypes.STRING,
-    allowNull: true,
-  },
+  // name: {
+  //   type: DataTypes.STRING,
+  //   allowNull: true,
+  // },
   // A display name the user picks in OUR app (sent from the frontend).
   username: {
     type: DataTypes.STRING,
@@ -50,11 +50,11 @@ const User = db.define('user', {
   // The Auth0 user id — the token's "sub", e.g. "auth0|abc123". The stable link
   // between Auth0 and our database. We key on this, never on email (emails can
   // change; the sub never does). Null for users who signed up with a password.
-  auth0Id: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    unique: true,
-  },
+  // auth0Id: {
+  //   type: DataTypes.STRING,
+  //   allowNull: true,
+  //   unique: true,
+  // },
 });
 
 // Express calls toJSON automatically whenever you res.json(user). Overriding it
