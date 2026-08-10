@@ -1,12 +1,6 @@
-// task.model.js — an EXAMPLE model. A model describes one table.
-// Each field below becomes a column. Copy this shape for your own
-// models (Post, User, ...), then delete this example.
-
 const { DataTypes } = require("sequelize");
 const db = require("../db");
 
-// db.define(tableName, columns)
-// Sequelize adds id, createdAt and updatedAt columns for you automatically.
 const MoodPin = db.define("moodPin", {
   mood: {
     type: DataTypes.ENUM(
@@ -16,7 +10,7 @@ const MoodPin = db.define("moodPin", {
       "Energetic",
       "Romantic",
       "Focused",
-      "Inspiring",
+      "Inspiring"
     ),
     allowNull: false,
   },
@@ -40,21 +34,6 @@ const MoodPin = db.define("moodPin", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-
-  //  userId : {
-  //       type: DataTypes.INTEGER,
-  //       allowNull : false,
-  //       validate: { notEmpty: true },
-  //       references: {
-  //           model: "users",
-  //           key: "userId",
-  //       },
-  //   },
-  // completed: {
-  //   type: DataTypes.BOOLEAN,
-  //   allowNull: false,
-  //   defaultValue: false, // a new task starts as "not done"
-  // },
 });
 
 module.exports = MoodPin;
