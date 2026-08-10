@@ -66,7 +66,7 @@ router.post("/", requireAuth, async (req, res, next) => {
 router.patch("/:id", requireAuth, async (req, res, next) => {
   try {
     const pin = await MoodPin.findByPk(req.params.id);
-
+    console.log(pin);
     if (!pin) {
       return res.status(404).json({
         error: "Pin not found",
