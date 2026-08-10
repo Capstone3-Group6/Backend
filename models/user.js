@@ -20,6 +20,16 @@ const User = db.define('user', {
     },
   },
 
+  bio:{
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+
+  profileImage:{
+    type:DataTypes.STRING,
+    allowNull: true,
+  },
+
   passwordHash: {
     type: DataTypes.STRING,
     allowNull: true,

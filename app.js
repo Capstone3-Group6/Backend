@@ -16,6 +16,7 @@ const { db } = require('./models'); // the database connection
 const { authRouter, recommendationRouter } = require('./routes'); // our routers
 const { requireAuth } = require('./middleware/auth'); // accepts our JWT or Auth0's
 const pinRouter = require("./routes/pins")
+const userRoutes = require("./routes/user")
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -91,6 +92,7 @@ app.get('/api/protected', requireAuth, (req, res) => {
 // To make tasks private per user, add requireAuth middleware here:
 //   app.use('/api/tasks', requireAuth, taskRouter)
 app.use("/pins", pinRouter);
+app.use("/users", userRoutes)
 app.use('/api/recommendations', recommendationRouter);
 
 // Auth routes: signup/login/logout with our own JWT, plus the Auth0 sync.
