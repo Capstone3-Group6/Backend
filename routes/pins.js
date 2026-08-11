@@ -1,21 +1,53 @@
 const express = require("express");
 const router = express.Router();
 
-const { MoodPin } = require("../models");
+const { MoodPin, User } = require("../models");
 const { requireAuth } = require("../middleware/auth");
 
 
 // Get all pins
 router.get("/", async (req, res, next) => {
   try {
-    const pins = await MoodPin.findAll();
-    res.json(pins);
+    const pins = await MoodPin.findAll({
+      attributes: [
+        "id",
+        "latitude",
+        "longitude",
+        ["locationName", "placeName"],
+        "mood",
+        "description",
+      ],
+      include: [
+        {
+          model: User,
+          attributes: [
+            ["userName", "username"],
+            ["profileImage", "avatar"],
+          ],
+        },
+      ],
+    });
+
+    const formattedPins = pins.map((pin) => {
+      const data = pin.toJSON();
+
+      return {
+        id: data.id,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        placeName: data.placeName,
+        mood: data.mood,
+        description: data.description,
+        username: data.user?.username,
+        avatar: data.user?.avatar,
+      };
+    });
+
+    res.json(formattedPins);
   } catch (error) {
     next(error);
   }
 });
-
-
 // Get one pin
 router.get("/:id", async (req, res, next) => {
   try {

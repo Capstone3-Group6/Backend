@@ -4,7 +4,7 @@ const router = express.Router();
 const { User } = require("../models")
 const { requireAuth } = require("../middleware/auth")
 
-// Show the currently logged in user's profile
+// Show the currently logged in user's profilde
 router.get("/me", requireAuth, async (req, res, next) => {
     try{
         const user = await User.findByPk(req.user.id);
