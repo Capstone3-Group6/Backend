@@ -4,9 +4,8 @@ const router = express.Router();
 const { MoodPin, User } = require("../models");
 const { requireAuth } = require("../middleware/auth");
 
-
 // Get all pins
-router.get("/", async (req, res, next) => {
+router.get("/", requireAuth, async (req, res, next) => {
   try {
     const pins = await MoodPin.findAll({
       attributes: [
@@ -65,17 +64,10 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-
 // Create a pin
 router.post("/", requireAuth, async (req, res, next) => {
   try {
-    const {
-      locationName,
-      mood,
-      description,
-      latitude,
-      longitude,
-    } = req.body;
+    const { locationName, mood, description, latitude, longitude } = req.body;
 
     const pin = await MoodPin.create({
       locationName,
@@ -92,7 +84,6 @@ router.post("/", requireAuth, async (req, res, next) => {
     next(error);
   }
 });
-
 
 // Update your own pin
 router.patch("/:id", requireAuth, async (req, res, next) => {
@@ -118,7 +109,6 @@ router.patch("/:id", requireAuth, async (req, res, next) => {
     next(error);
   }
 });
-
 
 // Delete your own pin
 router.delete("/:id", requireAuth, async (req, res, next) => {

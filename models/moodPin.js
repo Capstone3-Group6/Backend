@@ -32,7 +32,7 @@ const MoodPin = db.define("moodPin", {
 
   locationName: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
 });
 
