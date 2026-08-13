@@ -1,5 +1,4 @@
 require("dotenv").config();
-
 const { Sequelize } = require("sequelize");
 
 // Production (Render, Neon, Railway, etc.) provides DATABASE_URL.
