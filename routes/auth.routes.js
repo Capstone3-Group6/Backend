@@ -133,11 +133,12 @@ router.post('/login', authLimiter, async (req, res, next) => {
     const user = await User.findOne({
       where: {
         [Op.or]: [
-          { email: email },
-          { userName: username },
+          { email: login },
+          { userName: login },
         ],
       },
     });
+
 
     const invalid = () =>
       res.status(401).json({

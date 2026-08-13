@@ -48,10 +48,17 @@ app.use(helmet()); // sets safe HTTP headers
 app.use(cookieParser());
 app.use(
   cors({
-    origin: FRONTEND_URL, // let your React app call this API
-    credentials: true, // allow cookies (needed once you add login/auth)
+    origin: (origin, callback) => {
+      // allow requests with no origin (like mobile apps, curl, postman) or matching localhost
+      if (!origin || origin.startsWith('http://localhost:') || origin === FRONTEND_URL) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
+    credentials: true, // allow cookies (needed for auth)
   }),
 );
+
 app.use(morgan('dev')); // logs each request to the terminal (handy for debugging)
 app.use(express.json({ limit: '10kb' })); // parse JSON bodies into req.body; cap the size
 app.use(limiter);
