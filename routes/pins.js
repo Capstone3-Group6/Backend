@@ -6,7 +6,7 @@ const { requireAuth } = require("../middleware/auth");
 
 // Get all pins
 router.get("/", requireAuth, async (req, res, next) => {
-  try {
+  try { 
     const pins = await MoodPin.findAll({
       attributes: [
         "id",
@@ -97,14 +97,7 @@ router.post("/", requireAuth, async (req, res, next) => {
   try {
     const { locationName, mood, description, latitude, longitude } = req.body;
 
-    const pin = await MoodPin.create({
-      locationName,
-      mood,
-      description,
-      latitude,
-      longitude,
-      userId: req.user.id,
-    });
+    const pin = await MoodPin.create(req.body);
 
     res.status(201).json(pin);
   } catch (error) {
