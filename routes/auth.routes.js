@@ -133,8 +133,8 @@ router.post('/login', authLimiter, async (req, res, next) => {
     const user = await User.findOne({
       where: {
         [Op.or]: [
-          { email: login },
-          { userName: login },
+          { email: email },
+          { userName: username },
         ],
       },
     });

@@ -47,6 +47,34 @@ router.get("/", requireAuth, async (req, res, next) => {
     next(error);
   }
 });
+
+//Get pin for that specific user 
+
+// Get all pins belonging to the currently logged-in user
+router.get("/me", requireAuth, async (req, res, next) => {
+  try {
+    const pins = await MoodPin.findAll({
+      where: {
+        userId: req.user.id,
+      },
+      attributes: [
+        "id",
+        "latitude",
+        "longitude",
+        ["locationName", "placeName"],
+        "mood",
+        "description",
+        "createdAt",
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.json(pins);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Get one pin
 router.get("/:id", async (req, res, next) => {
   try {
@@ -136,5 +164,7 @@ router.delete("/:id", requireAuth, async (req, res, next) => {
     next(error);
   }
 });
+
+
 
 module.exports = router;
