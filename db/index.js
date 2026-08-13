@@ -1,8 +1,6 @@
 require("dotenv").config();
 const { Sequelize } = require("sequelize");
 
-// Production (Render, Neon, Railway, etc.) provides DATABASE_URL.
-// Local dev uses individual DB_* vars so you don't need a connection string.
 let db;
 
 if (process.env.DATABASE_URL) {
