@@ -48,8 +48,6 @@ router.get("/", requireAuth, async (req, res, next) => {
   }
 });
 
-//Get pin for that specific user 
-
 // Get all pins belonging to the currently logged-in user
 router.get("/me", requireAuth, async (req, res, next) => {
   try {
@@ -93,19 +91,31 @@ router.get("/:id", async (req, res, next) => {
 });
 
 // Create a pin
-router.post("/", requireAuth, async (req, res, next) => {
-  try {
-    const { locationName, mood, description, latitude, longitude } = req.body;
+router.post("/", requireAuth, async(req, res, next) => {
+  try{
+    const {
+      locationName,
+      mood,
+      description,
+      latitude,
+      longitude
+    } = req.body
 
-    const pin = await MoodPin.create(req.body);
+    const pin = await MoodPin.create({
+      locationName,
+      mood,
+      description,
+      latitude,
+      longitude,
+      userId: req.user.id
+    })
 
     res.status(201).json(pin);
-  } catch (error) {
+  }catch(error){
     console.error("PIN ERROR:", error);
     next(error);
   }
-});
-
+})
 // Update your own pin
 router.patch("/:id", requireAuth, async (req, res, next) => {
   try {
