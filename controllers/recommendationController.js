@@ -38,21 +38,48 @@ const getRecommendations = async (req, res) => {
     const ai = new GoogleGenAI({ apiKey: geminiApiKey });
     const geminiResponse = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: `Convert this mood into 3 venue search keywords: "${mood.trim()}"`,
+      contents: `Analyze this user mood: "${mood.trim()}". Return a JSON array of 3 distinct venue search ideas for nearby places. For each idea, provide:
+1. "keyword": Google Places search query (e.g. "cozy cafe", "botanical garden", "art gallery").
+2. "reason": A single, concise friendly sentence (max 18 words) explaining why this specific venue type fits the "${mood.trim()}" mood.`,
       config: {
+
         responseMimeType: 'application/json',
         responseSchema: {
           type: Type.ARRAY,
-          items: { type: Type.STRING },
+          items: {
+            type: Type.OBJECT,
+            properties: {
+              keyword: { type: Type.STRING },
+              reason: { type: Type.STRING },
+            },
+            required: ['keyword', 'reason'],
+          },
         },
       },
     });
 
-    const keywords = JSON.parse(geminiResponse.text || '[]').slice(0, 3);
-
-    if (!keywords.length) {
-      return res.status(500).json({ error: 'Failed to generate keywords.' });
+    let rawIdeas = [];
+    try {
+      rawIdeas = JSON.parse(geminiResponse.text || '[]').slice(0, 3);
+    } catch {
+      rawIdeas = [];
     }
+
+    const searchIdeas = rawIdeas.map((item) => {
+      if (typeof item === 'string') {
+        return { keyword: item, reason: `Fits your "${mood}" mood with relaxing and positive vibes.` };
+      }
+      return {
+        keyword: item.keyword || 'popular spots',
+        reason: item.reason || `Handpicked to match your "${mood}" mood.`,
+      };
+    });
+
+    if (!searchIdeas.length) {
+      return res.status(500).json({ error: 'Failed to generate recommendations.' });
+    }
+
+    const keywords = searchIdeas.map((idea) => idea.keyword);
 
     const hasCoords = !isNaN(Number(latitude)) && !isNaN(Number(longitude));
     const locationBias = hasCoords
@@ -60,7 +87,15 @@ const getRecommendations = async (req, res) => {
       : null;
 
     const rawPlaces = await Promise.all(
-      keywords.map((keyword) => searchPlaces(keyword, locationBias, googlePlacesApiKey))
+      searchIdeas.map(async (idea) => {
+        const places = await searchPlaces(idea.keyword, locationBias, googlePlacesApiKey);
+        return places.map((place) => ({
+          ...place,
+          matchedKeyword: idea.keyword,
+          reason: idea.reason,
+          mood: mood.trim(),
+        }));
+      })
     );
 
     const seenIds = new Set();
