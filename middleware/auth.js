@@ -116,7 +116,6 @@ const jwtCheck = auth({
 const requireAuth = async (req, res, next) => {
   const cookieToken = req.cookies?.[COOKIE_NAME];
   const bearer = req.headers.authorization?.startsWith('Bearer ');
-
   // --- door 1: our own cookie JWT ---
   if (cookieToken) {
     try {
@@ -124,7 +123,6 @@ const requireAuth = async (req, res, next) => {
       // It THROWS on a forged or expired token — that's the whole point.
       const payload = jwt.verify(cookieToken, JWT_SECRET);
       const user = await User.findByPk(payload.sub);
-
       // The token was valid but the user is gone (deleted account). Treat the
       // stale cookie as no credential at all.
       if (!user) {
