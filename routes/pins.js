@@ -76,7 +76,7 @@ router.get("/me", requireAuth, async (req, res, next) => {
 });
 
 // Get one pin
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", requireAuth, async (req, res, next) => {
   try {
     const pin = await MoodPin.findByPk(req.params.id);
 
