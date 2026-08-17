@@ -42,7 +42,6 @@ const getRecommendations = async (req, res) => {
 1. "keyword": Google Places search query (e.g. "cozy cafe", "botanical garden", "art gallery").
 2. "reason": A single, concise friendly sentence (max 18 words) explaining why this specific venue type fits the "${mood.trim()}" mood.`,
       config: {
-
         responseMimeType: 'application/json',
         responseSchema: {
           type: Type.ARRAY,
@@ -115,4 +114,40 @@ const getRecommendations = async (req, res) => {
   }
 };
 
-module.exports = { getRecommendations };
+// Added by Musaddik — Follow-up endpoint to get AI details about a specific venue
+const askPlaceDetails = async (req, res) => {
+  try {
+    const { placeName, address, question, mood } = req.body;
+
+    if (!placeName?.trim() || !question?.trim()) {
+      return res.status(400).json({ error: 'Place name and question are required.' });
+    }
+
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+    if (!geminiApiKey) {
+      return res.status(500).json({ error: 'Server API keys are missing.' });
+    }
+
+    const ai = new GoogleGenAI({ apiKey: geminiApiKey });
+    const prompt = `You are Moodie, a cheerful, warm, and helpful AI city guide for MoodMap.
+The user is viewing this place: "${placeName.trim()}" located at "${address || 'nearby'}".
+The user's current mood/vibe is: "${mood || 'exploring'}".
+The user asks: "${question.trim()}".
+
+Provide a direct, enthusiastic, and concise answer (2-3 sentences max). Include practical details, recommendations, or vibes tailored to their question. Add 1-2 friendly emojis.`;
+
+    const geminiResponse = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+    });
+
+    const answer = geminiResponse.text?.trim() || "Here's a great spot to check out! Enjoy your visit! ✨";
+
+    return res.status(200).json({ answer });
+  } catch (err) {
+    console.error('Error in askPlaceDetails:', err);
+    return res.status(500).json({ error: 'Failed to generate place details.' });
+  }
+};
+
+module.exports = { getRecommendations, askPlaceDetails };
