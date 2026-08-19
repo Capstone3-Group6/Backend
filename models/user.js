@@ -26,7 +26,7 @@ const User = db.define('user', {
   },
 
   profileImage:{
-    type:DataTypes.STRING,
+    type:DataTypes.TEXT,
     allowNull: true,
   },
 

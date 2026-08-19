@@ -60,7 +60,7 @@ app.use(
 );
 
 app.use(morgan('dev')); // logs each request to the terminal (handy for debugging)
-app.use(express.json({ limit: '10kb' })); // parse JSON bodies into req.body; cap the size
+app.use(express.json({ limit: '10mb' })); // parse JSON bodies into req.body; cap the size
 app.use(limiter);
 app.use(express.static(path.join(__dirname, 'public'))); // serve the info page in /public
 
@@ -148,6 +148,43 @@ const startServer = async () => {
     // and auth0Id on EVERY boot, so with nodemon restarting all day you quietly
     // pile up users_username_key1, key2, key3... until Postgres refuses more.
     // And never `sync({ force: true })` in app.js — it DROPS your tables.
+    const queryInterface = db.getQueryInterface();
+    try {
+      const moodPinColumns = await queryInterface.describeTable('moodPins');
+
+      await db.query(
+        "ALTER TYPE \"enum_moodPins_mood\" ADD VALUE IF NOT EXISTS 'Fun'",
+      );
+
+      if (!moodPinColumns.image) {
+        await queryInterface.addColumn('moodPins', 'image', {
+          type: db.Sequelize.TEXT,
+          allowNull: true,
+        });
+        console.log('Added image column to moodPins.');
+      }
+    } catch (error) {
+      if (error.name !== 'SequelizeDatabaseError') {
+        throw error;
+      }
+    }
+
+    try {
+      const userColumns = await queryInterface.describeTable('users');
+
+      if (userColumns.profileImage?.type !== 'TEXT') {
+        await queryInterface.changeColumn('users', 'profileImage', {
+          type: db.Sequelize.TEXT,
+          allowNull: true,
+        });
+        console.log('Changed users.profileImage to TEXT.');
+      }
+    } catch (error) {
+      if (error.name !== 'SequelizeDatabaseError') {
+        throw error;
+      }
+    }
+
     await db.sync();
     console.log('🧩 Models synced.');
 

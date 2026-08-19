@@ -5,6 +5,7 @@ const MoodPin = db.define("moodPin", {
   mood: {
     type: DataTypes.ENUM(
       "Happy",
+      "Fun",
       "Calm",
       "Creative",
       "Energetic",
@@ -32,6 +33,11 @@ const MoodPin = db.define("moodPin", {
 
   locationName: {
     type: DataTypes.STRING,
+    allowNull: true,
+  },
+
+  image: {
+    type: DataTypes.TEXT,
     allowNull: true,
   },
 });
